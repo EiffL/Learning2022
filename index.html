@@ -117,43 +117,9 @@
 							</section>
 						</section>
 
-
-									<section>
 									<section class="inverted" data-background="#000">
 										<h2> Can AI solve all of our problems?</h2>
 									</section>
-
-									<section>
-										<h3 class="slide-title">The AI bubble</h3>
-
-										<div class="container">
-											<canvas data-chart="bar">
-												<!--
-													{
-													 "data": {
-														"labels": ["2012", "2013", "2014","2015", "2016" ,"2017", "2018", "2019", "2020", "2021"],
-														"datasets": [
-														 {
-															"data":[ 21, 15, 17, 22, 31, 71, 113, 231, 322, 476],
-															"label":"Deep Learning || CNN || Neural Network ","backgroundColor":"#A63446"
-														}
-														]
-													 },
-													 "options": { "responsive": "true",
-												"scales": {
-														"yAxes": [{
-																"type": "linear"
-														}]
-												}
-													}
-													}
-													-->
-											</canvas><br>
-										</div>
-										<div><b>astro-ph</b> abstracts mentioning <b>Deep Learning</b>, <b>CNN</b>, or <b>Neural Networks</b></div>
-									</section>
-
-								</section>
 
 
 						<section>
@@ -201,13 +167,7 @@
                 </div>
 
                 <div class="col">
-                  <ul>
-                    <li class="fragment">Deep Learning for astronomical data reduction</li>
-                    <br>
-                    <li class="fragment">Bayesian Neural Networks</li>
-                    <br>
-                    <li class="fragment">Physical Bayesian inference</li>
-                  </ul>
+
                   <br>
                   <br>
                   <div class="block fragment">
@@ -227,7 +187,6 @@
                 </div>
               </div>
             </section>
-
 
 			      <section>
 			      	<h1> Data-driven priors for astronomical inverse problems</h1>
@@ -1483,8 +1442,92 @@
 																																				</div>
 																																			</div>
 																																		</section>
-
 																																		</section>
+
+																																		<section>
+<section>
+	<h3 class="slide-title"> Hybrid Physical-Neural ODE (WIP)</h3>
+		<div class="container">
+			<div class="col">
+
+				<ul>
+
+					<li>Neural network parametrising a correction to the gravitational
+						potential as a <b>Fourier-based isotropic filter</b>.</li>
+
+					<br>
+				</ul>
+
+										<div class="fragment">
+											<img data-src="assets/fitted_filter.png">
+										</div>
+
+			</div>
+
+			<div class="col">
+
+				<pre class="python"><code data-trim data-noescape>
+					def neural_nbody_ode(a, state):
+				     pos = state[0]; vel = state[1]
+
+					 	  #### Compute gravitational forces
+				     delta = flowpm.cic_paint(tf.zeros([batch_size, nc, nc, nc]), pos)
+				     delta_k = r2c3d(delta)
+				     pot_k = delta_k * laplace_kernel(kvec) * longrange_kernel(kvec)
+
+						  # Neural potential correction
+						  pot_k = pot_k * (1 + apply_model(kvec, a))
+						  ######################################
+
+				     forces = tf.stack([ flowpm.cic_readout(
+				             c2r3d(pot_k *gradient_kernel(kvec, i)), pos)
+				         for i in range(3) ], axis=-1)
+				     forces = forces * 1.5 * cosmo.Omega_m
+				  		#######################################
+
+				     #Computes the update of position (drift)
+				     dpos = 1. / (a**3 * flowpm.tfbackground.E(cosmo, a)) * vel
+
+				     #Computes the update of velocity (kick)
+				     dvel = 1. / (a**2 * flowpm.tfbackground.E(cosmo, a)) * forces
+
+				   return tf.stack([dpos, dvel], axis=0)
+							</code></pre>
+
+			</div>
+		</div>
+</section>
+
+<section>
+
+	<div class="container">
+
+		<div class="col">
+			<img data-src="assets/sim_test1.png"/>
+			<br>
+			Different boxsize
+		</div>
+
+		<div class="col">
+			<img data-src="assets/sim_test2.png"/>
+			<br>
+			Different resolution
+		</div>
+
+
+		<div class="col">
+			<img data-src="assets/sim_test3.png"/>
+			<br>
+			Different Cosmology!
+		</div>
+
+
+	</div>
+
+</section>
+
+</section>
+
 
 																									      						<section>
 																									      							<section>
